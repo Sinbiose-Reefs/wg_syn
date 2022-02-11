@@ -5,6 +5,7 @@
 *.jpg
 *.png
 manuscript
+output
 data/citation_report
 data/data_collection
 data/*.xlsx
