@@ -4,4 +4,8 @@
 .Ruserdata
 *.jpg
 *.png
+manuscript
+data/citation_report
+data/data_collection
+data/*.xlsx
 
