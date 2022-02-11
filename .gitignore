@@ -1,12 +1,12 @@
+manuscript
+output
+data/citation_report
+data/data_collection
+data/*.xlsx
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
 *.jpg
 *.png
-manuscript
-output
-data/citation_report
-data/data_collection
-data/*.xlsx
 *.txt
