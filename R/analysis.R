@@ -1381,11 +1381,23 @@ ct_taxa_traits <- lapply (list_papers, function (i) # apply to each study
 ct_taxa_traits<-do.call(rbind, ct_taxa_traits)
 # summary statistics
 summary(ct_taxa_traits)
+# finding outliers
+ct_taxa_traits_outliers <- ct_taxa_traits[which(ct_taxa_traits$Ntaxa<15),] # outliers
+ct_taxa_traits<-rbind (data.frame (ct_taxa_traits, # bind into the df
+             KeepOutliers = T),
+       data.frame (ct_taxa_traits_outliers,
+                   KeepOutliers = F))
+ct_taxa_traits$KeepOutliers<-factor (ct_taxa_traits$KeepOutliers,
+                                 levels = c("FALSE",
+                                            "TRUE"))
 
 # test of diff models
-m1 <- glm (Ntraits~Ntaxa,data=ct_taxa_traits, family="poisson")
-m2 <- glm (Ntraits~poly(Ntaxa,2),data=ct_taxa_traits, family="poisson")
-m3 <- glm (Ntraits~poly(Ntaxa,3),data=ct_taxa_traits, family="poisson")
+m1 <- glm (Ntraits~Ntaxa,data=ct_taxa_traits[which(ct_taxa_traits$KeepOutliers==F),], 
+           family="poisson")
+m2 <- glm (Ntraits~poly(Ntaxa,2),data=ct_taxa_traits[which(ct_taxa_traits$KeepOutliers==F),],
+           family="poisson")
+m3 <- glm (Ntraits~poly(Ntaxa,3),data=ct_taxa_traits[which(ct_taxa_traits$KeepOutliers==F),], 
+           family="poisson")
 
 require(MuMIn)
 model.sel(m1,m2,m3)
@@ -1395,50 +1407,93 @@ poison_smooth <- function(...) {
   geom_smooth(method = "glm", method.args = list(family = "poisson"), ...)
 }
 
-ggplot(ct_taxa_traits, aes (x=Ntaxa,
-                            y=Ntraits)) + 
-  geom_point(size=3) + 
+p1<-ggplot(ct_taxa_traits, aes (x=Ntaxa,
+                            y=Ntraits,
+                            group= KeepOutliers,
+                            fill = KeepOutliers)) + 
+  geom_point(size=3,alpha = 0.2) + 
   poison_smooth(
     formula = y ~ splines::ns(x, 3),
     se=T,
     size=1,
-    col="orange",
-    fill = "black",
-    alpha=0.02) + theme_classic() + 
+    colour = "black",
+    alpha=0.3) + theme_classic()+  
   scale_x_continuous(name="Number of taxa per study", limits=c(0, 30)) +
   scale_y_continuous(name="Number of traits per study", limits=c(0, 10))+ 
-  theme(axis.title = element_text(size=16))
+  theme(axis.title = element_text(size=16),
+        legend.position = "none") +
+  scale_fill_manual(
+    values = c("FALSE" = "orange",
+               "TRUE" = "black"))
 
-ggsave(here("output","#traitsTaxa.pdf"),width=5,height=4)
+p1<-p1 + ggplot2::annotate("text", x = 25, y = 10, label = "n=96",fontface = 'italic')
+
 
 # MPD
 # test of diff models
-m1 <- glm (Ntraits~mpd,data=ct_taxa_traits[which(is.nan(ct_taxa_traits$mpd)!= T),], family="poisson")
-m2 <- glm (Ntraits~poly(Ntaxa,2),data=ct_taxa_traits[which(is.nan(ct_taxa_traits$mpd)!= T),], family="poisson")
-m3 <- glm (Ntraits~poly(Ntaxa,3),data=ct_taxa_traits[which(is.nan(ct_taxa_traits$mpd)!= T),], family="poisson")
+m1 <- glm (Ntraits~mpd,data=ct_taxa_traits[which(ct_taxa_traits$KeepOutliers==F & is.nan(ct_taxa_traits$mpd)!= T),], 
+           family="poisson")
+m2 <- glm (Ntraits~poly(Ntaxa,2),data=ct_taxa_traits[which(ct_taxa_traits$KeepOutliers==F & is.nan(ct_taxa_traits$mpd)!= T),], 
+           family="poisson")
+m3 <- glm (Ntraits~poly(Ntaxa,3),ct_taxa_traits[which(ct_taxa_traits$KeepOutliers==F & is.nan(ct_taxa_traits$mpd)!= T),], 
+           family="poisson")
 
 require(MuMIn)
 model.sel(m1,m2,m3)
 
-ggplot(ct_taxa_traits, aes (x=mpd,
-                            y=Ntraits)) + 
-  geom_point(size=3) + 
+p2<-ggplot(ct_taxa_traits, aes (x=mpd,
+                            y=Ntraits,
+                            group = KeepOutliers,
+                            fill = KeepOutliers)) +
+  geom_point(size=3,alpha = 0.2) + 
   poison_smooth(
     formula = y ~ splines::ns(x, 2),
     se=T,
     size=1,
-    col="orange",
-    fill = "black",
-    alpha=0.02) + theme_classic() + 
+    colour = "black",
+    alpha=0.3) + theme_classic()+ 
   scale_x_continuous(name="MPD between taxa within a study", limits=c(0, 1)) +
   scale_y_continuous(name="Number of traits per study", limits=c(0, 10))+ 
-  theme(axis.title = element_text(size=16))
+  theme(axis.title.y  = element_blank(),
+        axis.title.x = element_text(size=16),
+        legend.position = c(0.2,0.9))+
+  scale_fill_manual(
+    values = c("FALSE" = "orange",
+               "TRUE" = "black"))
+p2<-p2 + ggplot2::annotate("text", x = 0.75, y = 10, label = "n=94",fontface = 'italic')
 
-ggsave(here("output","#traitsTaxaMpd.pdf"),width=5,height=4)
+png(here ("output", "mpd_Ntaxa_traits"),
+    res = 300,units = "px",width=2500,height=1500)
+grid.arrange(p1,p2,
+             ncol =2)
+dev.off()
 
+# third order of MPD (equally plausible model)
+require(MuMIn)
+model.sel(m1,m2,m3)
 
+p2<-ggplot(ct_taxa_traits, aes (x=mpd,
+                                y=Ntraits,
+                                group = KeepOutliers,
+                                fill = KeepOutliers)) +
+  geom_point(size=3,alpha = 0.2) + 
+  poison_smooth(
+    formula = y ~ splines::ns(x, 3),
+    se=T,
+    size=1,
+    colour = "black",
+    alpha=0.3) + theme_classic()+ 
+  scale_x_continuous(name="MPD between taxa within a study", limits=c(0, 1)) +
+  scale_y_continuous(name="Number of traits per study", limits=c(0, 10))+ 
+  theme(axis.title.y  = element_blank(),
+        axis.title.x = element_text(size=16),
+        legend.position = c(0.2,0.9))+
+  scale_fill_manual(
+    values = c("FALSE" = "orange",
+               "TRUE" = "black"))
+p2<-p2 + ggplot2::annotate("text", x = 0.75, y = 10, label = "n=94",fontface = 'italic')
 
 # -------------------------------------------
 
-ALL_data_sel[which(ALL_data_sel$ResearchContext %in% c("Macroevolution","Ecomorphology",
-                                                       "Ecophysiology, trade-offs")),"YourName"]
+#ALL_data_sel[which(ALL_data_sel$ResearchContext %in% c("Macroevolution","Ecomorphology",
+#                                                       "Ecophysiology, trade-offs")),"YourName"]
