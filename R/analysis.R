@@ -61,6 +61,10 @@ ALL_data_sel <- ALL_data_sel [-which(rownames(ALL_data_sel)%in% to_rm),]
 # set of papers
 length(unique(ALL_data_sel$PaperNumber))
 
+
+# studied systems
+
+
 # -----------------------------------------------------------------------------#
 ## Analysis 1: what's the main taxonomic rank of these cross-taxa research?
 
@@ -1078,7 +1082,7 @@ ecosystem <- table(ALL_data_sel$EcologicalSystem,
                    ALL_data_sel$PaperNumber)
 ecosystem <- data.frame (value=(rowSums(ecosystem>0)))
 ecosystem$system <- rownames(ecosystem)
-
+ecosystem$value/sum(ecosystem$value)
 # ------------------------------------------
 # which traits
 
