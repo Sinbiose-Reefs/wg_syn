@@ -23,7 +23,17 @@ knitr::opts_chunk$set(echo = TRUE)
 
 source ( "R/whole_tree_fig3.R")
 
-phylo_to_show
+
+plot(phylo_taxa_whole,type="fan",
+     show.tip.label=T,
+     edge.width = values_to_plot*1,
+     edge.color = edge_colors,
+     adj=0.5,
+     srt=2,
+     cex=0.3,
+     no.margin = T
+)
+
 
 ```
 
