@@ -18,7 +18,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Tree topology of taxa comprising cross-taxa research in functional ecology
 
 
-```{r phylo, echo=F, fig.keep='last',warning=FALSE,message=FALSE}
+```{r , echo=F, fig.keep='last',warning=FALSE,message=FALSE}
 
 source ( "R/whole_tree_fig3.R")
 

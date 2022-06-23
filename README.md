@@ -8,4 +8,4 @@ Going cross-taxa in functional ecology: a conceptual framework
 
 ## Tree topology of taxa comprising cross-taxa research in functional ecology
 
-![](README_files/figure-gfm/phylo-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
