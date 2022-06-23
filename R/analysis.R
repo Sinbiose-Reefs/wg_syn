@@ -5,6 +5,7 @@ source("R/functions.R")
 
 # Load data
 files <- list.files (here("data","from_readers","ReviewedByALLuza"))
+
 # all at once
 ALL_data <- lapply (files, function (i) 
   read.xlsx(here("data","from_readers","ReviewedByALLuza",i),
@@ -239,7 +240,9 @@ dev.off()
 # save
 #save(class_taxa,
 #     file=here("output","ranks.RData"))
+
 load(file=here("output","ranks.RData"))
+
 # rm unclassified taxa
 class_taxa<- class_taxa [which(lapply (class_taxa,length)>1)]
 
@@ -519,6 +522,14 @@ plotweb((m_web), method = "normal",empty=F,
 
 dev.off()
 
+# nestedness in this bipartite network
+(nestedness_bipartite <- oecosimu(m_web[order (rowSums(m_web),decreasing=T),order (colSums(m_web),decreasing=T)], 
+                                nestednodf, 
+                                "swap", 
+                                nsimul = 999,
+                                alternative = "greater")
+)
+
 # ====================================================================
 # interaction plot
 # help here: https://r-inspirations.blogspot.com/2016/08/create-bipartite-graph-with-igraph.html
@@ -611,6 +622,12 @@ legend("topright",
 
 
 dev.off()
+
+
+# modularity in this network
+wtc <- cluster_walktrap(g)
+modularity(g, membership(wtc))
+
 
 ## ----------------------------------------------------------------------- #
 
@@ -1055,6 +1072,13 @@ grid.arrange (plot6,
 dev.off()
 
 
+# ecolgical system
+ALL_data_sel$EcologicalSystem<- gsub (" ","",tolower(ALL_data_sel$EcologicalSystem))
+ecosystem <- table(ALL_data_sel$EcologicalSystem,
+                   ALL_data_sel$PaperNumber)
+ecosystem <- data.frame (value=(rowSums(ecosystem>0)))
+ecosystem$system <- rownames(ecosystem)
+
 # ------------------------------------------
 # which traits
 
@@ -1392,19 +1416,22 @@ ct_taxa_traits$KeepOutliers<-factor (ct_taxa_traits$KeepOutliers,
                                             "TRUE"))
 
 # test of diff models
-m1 <- glm (Ntraits~Ntaxa,data=ct_taxa_traits[which(ct_taxa_traits$KeepOutliers==F),], 
+m1 <- gam (Ntraits~s(mpd),
+           data=ct_taxa_traits[which(ct_taxa_traits$KeepOutliers==T),], 
            family="poisson")
-m2 <- glm (Ntraits~poly(Ntaxa,2),data=ct_taxa_traits[which(ct_taxa_traits$KeepOutliers==F),],
-           family="poisson")
-m3 <- glm (Ntraits~poly(Ntaxa,3),data=ct_taxa_traits[which(ct_taxa_traits$KeepOutliers==F),], 
-           family="poisson")
-
-require(MuMIn)
-model.sel(m1,m2,m3)
+#m1 <- glm (Ntraits~Ntaxa,data=ct_taxa_traits[which(ct_taxa_traits$KeepOutliers==F),], 
+#           family="poisson")
+#m2 <- glm (Ntraits~poly(Ntaxa,2),data=ct_taxa_traits[which(ct_taxa_traits$KeepOutliers==F),],
+#           family="poisson")
+#m3 <- glm (Ntraits~poly(Ntaxa,3),data=ct_taxa_traits[which(ct_taxa_traits$KeepOutliers==F),], 
+#           family="poisson")
+#require(MuMIn)
+#model.sel(m1,m2,m3)
 
 # poison smooth 
 poison_smooth <- function(...) {
-  geom_smooth(method = "glm", method.args = list(family = "poisson"), ...)
+  geom_smooth(method = "gam", method.args = list(family = "poisson"), ...)
+  # geom_smooth(method = "glm", method.args = list(family = "poisson"), ...) # glm option
 }
 
 p1<-ggplot(ct_taxa_traits, aes (x=Ntaxa,
@@ -1413,7 +1440,8 @@ p1<-ggplot(ct_taxa_traits, aes (x=Ntaxa,
                             fill = KeepOutliers)) + 
   geom_point(size=3,alpha = 0.2) + 
   poison_smooth(
-    formula = y ~ splines::ns(x, 3),
+    formula = y ~ s(x),
+    #formula = y ~ splines::ns(x, 3),
     se=T,
     size=1,
     colour = "black",
@@ -1428,18 +1456,19 @@ p1<-ggplot(ct_taxa_traits, aes (x=Ntaxa,
 
 p1<-p1 + ggplot2::annotate("text", x = 25, y = 10, label = "n=96",fontface = 'italic')
 
-
 # MPD
 # test of diff models
-m1 <- glm (Ntraits~mpd,data=ct_taxa_traits[which(ct_taxa_traits$KeepOutliers==F & is.nan(ct_taxa_traits$mpd)!= T),], 
-           family="poisson")
-m2 <- glm (Ntraits~poly(Ntaxa,2),data=ct_taxa_traits[which(ct_taxa_traits$KeepOutliers==F & is.nan(ct_taxa_traits$mpd)!= T),], 
-           family="poisson")
-m3 <- glm (Ntraits~poly(Ntaxa,3),ct_taxa_traits[which(ct_taxa_traits$KeepOutliers==F & is.nan(ct_taxa_traits$mpd)!= T),], 
-           family="poisson")
-
-require(MuMIn)
-model.sel(m1,m2,m3)
+m1 <- gam (Ntraits~s(mpd),
+           data=ct_taxa_traits[which(ct_taxa_traits$KeepOutliers==F),], 
+                       family="poisson")
+#m1 <- glm (Ntraits~mpd,data=ct_taxa_traits[which(ct_taxa_traits$KeepOutliers==F & is.nan(ct_taxa_traits$mpd)!= T),], 
+#           family="poisson")
+#m2 <- glm (Ntraits~poly(Ntaxa,2),data=ct_taxa_traits[which(ct_taxa_traits$KeepOutliers==F & is.nan(ct_taxa_traits$mpd)!= T),], 
+#           family="poisson")
+#m3 <- glm (Ntraits~poly(Ntaxa,3),ct_taxa_traits[which(ct_taxa_traits$KeepOutliers==F & is.nan(ct_taxa_traits$mpd)!= T),], 
+#           family="poisson")
+#require(MuMIn)
+#model.sel(m1,m2,m3)
 
 p2<-ggplot(ct_taxa_traits, aes (x=mpd,
                             y=Ntraits,
@@ -1447,7 +1476,8 @@ p2<-ggplot(ct_taxa_traits, aes (x=mpd,
                             fill = KeepOutliers)) +
   geom_point(size=3,alpha = 0.2) + 
   poison_smooth(
-    formula = y ~ splines::ns(x, 2),
+    formula = y ~ s(x),
+    #formula = y ~ splines::ns(x, 2),
     se=T,
     size=1,
     colour = "black",
@@ -1467,6 +1497,12 @@ png(here ("output", "mpd_Ntaxa_traits"),
 grid.arrange(p1,p2,
              ncol =2)
 dev.off()
+
+pdf (here ("output", "mpd_Ntaxa_traitspdf"),height=4,width=9)
+grid.arrange(p1,p2,
+             ncol =2)
+dev.off()
+
 
 # third order of MPD (equally plausible model)
 require(MuMIn)
