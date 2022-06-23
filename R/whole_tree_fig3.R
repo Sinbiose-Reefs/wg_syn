@@ -14,8 +14,7 @@ class_taxon<- class_taxon[is.na(class_taxon)!=T]
 # rm 'class'
 class_taxon<- gsub ("Class ", "",class_taxon)
 # rm aspas
-class_taxon <- gsub ("“","",class_taxon)
-class_taxon <- gsub ("”","",class_taxon)
+class_taxon <- noquote(class_taxon)
 
 # rm characters after space (observations)
 class_taxon <- strsplit(class_taxon," ")
@@ -246,7 +245,7 @@ edge_colors <- colfunc(max(values_to_plot)+1)[match (values_to_plot,
                                                           max(values_to_plot)))]
 
 # phylogenyCrossTaxa
-pdf(here("output","CrossTaxaPhylo.pdf"),width=6,heigh=6)
+#pdf(here("output","CrossTaxaPhylo.pdf"),width=6,heigh=6)
 
 plot(phylo_taxa_whole,type="fan",
      show.tip.label=T,
@@ -265,4 +264,4 @@ plot(phylo_taxa_whole,type="fan",
 #       col = colfunc(max(values_to_plot)+1)[c(NA,seq (1,max(values_to_plot),16))]
 #)
 
-dev.off()
+#dev.off()
