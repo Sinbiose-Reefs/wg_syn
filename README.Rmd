@@ -1,6 +1,6 @@
 ---
 title: "Going cross-taxa in functional ecology: a conceptual framework"
-output: github_document
+output: html_document
 date: '2022-06-23'
 ---
 
