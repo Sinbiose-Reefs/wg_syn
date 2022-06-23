@@ -1,0 +1,27 @@
+---
+title: "Going cross-taxa in functional ecology: a conceptual framework"
+output: github_document
+date: '2022-06-23'
+---
+
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Tree topology of taxa comprising cross-taxa research in functional ecology
+
+
+```{r pressure, echo=FALSE, fig= "last"}
+
+source ( "R/whole_tree_fig3.R")
+
+
+```
+
