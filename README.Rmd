@@ -1,6 +1,7 @@
 ---
 title: "Going cross-taxa in functional ecology: a conceptual framework"
-output: html_document
+output: github_document
+authors: Reef Synthesis Working Group
 date: '2022-06-23'
 ---
 
@@ -22,6 +23,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 source ( "R/whole_tree_fig3.R")
 
+phylo_to_show
 
 ```
 
