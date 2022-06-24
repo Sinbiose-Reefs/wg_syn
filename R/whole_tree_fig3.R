@@ -247,22 +247,22 @@ edge_colors <- colfunc(max(values_to_plot)+1)[match (values_to_plot,
 # phylogenyCrossTaxa
 #pdf(here("output","CrossTaxaPhylo.pdf"),width=6,heigh=6)
 
-#plot(phylo_taxa_whole,type="fan",
-#     show.tip.label=T,
-#     edge.width = values_to_plot*1,
-#     edge.color = edge_colors,
-#     adj=0.5,
-#     srt=2,
-#     cex=0.3,
-#     no.margin = T
-#)
+plot(phylo_taxa_whole,type="fan",
+     show.tip.label=T,
+     edge.width = values_to_plot*1,
+     edge.color = edge_colors,
+     adj=0.5,
+     srt=2,
+     cex=0.3,
+     no.margin = T
+)
 
 
-#legend("topleft",
-#       legend=c("# Studies per edge",seq (1,max(values_to_plot),16)), 
-#       lwd=c(NA,seq (1,max(values_to_plot),16)*0.3),
-#       bty="n",
-#       col = colfunc(max(values_to_plot)+1)[c(NA,seq (1,max(values_to_plot),16))]
-#)
+legend("topleft",
+       legend=c("# Studies per edge",seq (1,max(values_to_plot),16)), 
+       lwd=c(NA,seq (1,max(values_to_plot),16)*0.3),
+       bty="n",
+       col = colfunc(max(values_to_plot)+1)[c(NA,seq (1,max(values_to_plot),16))]
+)
 
 #dev.off()
