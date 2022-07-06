@@ -648,8 +648,8 @@ m_network_df <- data.frame (value=m_network@likelihood,test="obs")
 # Check the components of each module
 printoutModuleInformation(m_network)
 
-png(here ("output","modules"),width = 12, height = 12, units = "cm",res=300)
-plotModuleWeb(m_network,labsize = 0.6)
+png(here ("output","modules.png"),width = 12, height = 12, units = "cm",res=300)
+plotModuleWeb(m_network,labsize = 0.2)
 dev.off()
 
 # Set Null Model
