@@ -524,6 +524,7 @@ plotweb((m_web), method = "normal",empty=F,
         low.lablength=10, 
         high.lablength=5)
 
+
 dev.off()
 
 # nestedness in this bipartite network
@@ -531,7 +532,7 @@ dev.off()
                                 nestednodf, 
                                 "swap", 
                                 nsimul = 999,
-                                alternative = "greater")
+                                alternative = "two.sided")
 )
 
 # ====================================================================
@@ -586,6 +587,7 @@ comb_edges <-comb_edges[which (comb_edges$weight >0),]
 #igraph
 g <- graph.data.frame(comb_edges, 
                       directed = F)
+
 #V(g)$type <- V(g)$name %in% comb_edges[,2] #the second column of edges is TRUE type
 E(g)$weight <- as.numeric(comb_edges$weight)
 colfunc <- colorRampPalette(c("gray", "orange"))
@@ -630,9 +632,55 @@ dev.off()
 
 # modularity in this network
 wtc <- cluster_walktrap(g)
-modularity(g, membership(wtc))
+obs_modularity_wtc <- modularity(g, membership(wtc))
+
+# Make null models for all sites using the swap.web null
+# matrix
+test_mat <- cast(data = comb_edges, formula = t1~t2, value= "weight",
+                 na.rm=T,fill=0)
+rownames(test_mat)<-test_mat[,1]; test_mat<-test_mat[,-1]
 
 
+# compute Modularity
+m_network<-computeModules(data.matrix(test_mat), method="Beckett")
+m_network_df <- data.frame (value=m_network@likelihood,test="obs")
+
+# Check the components of each module
+printoutModuleInformation(m_network)
+
+png(here ("output","modules"),width = 12, height = 12, units = "cm",res=300)
+plotModuleWeb(m_network,labsize = 0.6)
+dev.off()
+
+# Set Null Model
+nulls <- nullmodel(data.matrix(test_mat), N=100, method="vaznull") 
+modules.nulls <- sapply(nulls, computeModules, method="Beckett")
+like.nulls <- sapply(modules.nulls, function(x) x@likelihood)
+like.nulls<-data.frame (value = like.nulls,
+                        random=seq(1,length(like.nulls)))
+z <- (m_network@likelihood - mean(like.nulls$value))/sd(like.nulls$value)
+p <- 2*pnorm(-abs(z))
+quantile(like.nulls$value, probs = c(0.025,0.975))
+
+
+#  density plot 
+p<- ggplot(like.nulls, aes(x=value)) +
+  geom_density(fill="gray")+
+  geom_vline(data=m_network_df, aes(xintercept=value),
+             linetype="dashed",size=1)+
+  labs(title="Density curve",x="Modularity(Q)", 
+       y = "Density")
+p<-p + scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9"))+
+  theme_classic() + 
+  xlim(0.3, 0.6) + 
+  geom_text (aes (x=m_network_df$value-0.04,
+                  y=20,
+                  label=paste ("Q=",round(m_network_df$value,2))))
+
+
+png(here ("output","modularity"),width = 9, height = 9, units = "cm",res=300)
+p
+dev.off()
 ## ----------------------------------------------------------------------- #
 
 # research context
@@ -1508,32 +1556,109 @@ grid.arrange(p1,p2,
 dev.off()
 
 
-# third order of MPD (equally plausible model)
-require(MuMIn)
-model.sel(m1,m2,m3)
+# randomly remove one trait category in one observation
 
-p2<-ggplot(ct_taxa_traits, aes (x=mpd,
-                                y=Ntraits,
-                                group = KeepOutliers,
-                                fill = KeepOutliers)) +
-  geom_point(size=3,alpha = 0.2) + 
+set.seed(1234)
+
+# 10% of the dataset
+
+# randomly remove one trait category in one observation
+set.seed(1234)
+data_to_randomize <- ct_taxa_traits
+test1 <- lapply (seq (1,100), function (i){
+  
+  test_data <- sample (nrow (ct_taxa_traits),nrow (ct_taxa_traits)*0.1) # from this proportion of the dataset
+  data_to_randomize [test_data, "Ntraits"]<-data_to_randomize[test_data, "Ntraits"]-1 # subtract one trait
+  data_to_randomize$randomization <- i
+  data_to_randomize<-data_to_randomize[which(data_to_randomize$Ntraits>0),]
+  data_to_randomize
+})
+test1<-(do.call (rbind,test1))
+
+
+# plot
+ggplot(test1, aes (x=Ntaxa,
+                   y=Ntraits,
+                   group = randomization)) +
+  
+  facet_wrap(~KeepOutliers)+
+  geom_point(data=test1 [which(test1$randomization==1),], 
+             mapping = aes (x=Ntaxa,
+                            y=Ntraits),size=2,alpha = 0.2) + 
   poison_smooth(
-    formula = y ~ splines::ns(x, 3),
-    se=T,
-    size=1,
-    colour = "black",
-    alpha=0.3) + theme_classic()+ 
-  scale_x_continuous(name="MPD between taxa within a study", limits=c(0, 1)) +
-  scale_y_continuous(name="Number of traits per study", limits=c(0, 10))+ 
-  theme(axis.title.y  = element_blank(),
-        axis.title.x = element_text(size=16),
-        legend.position = c(0.2,0.9))+
-  scale_fill_manual(
-    values = c("FALSE" = "orange",
-               "TRUE" = "black"))
-p2<-p2 + ggplot2::annotate("text", x = 0.75, y = 10, label = "n=94",fontface = 'italic')
+    formula = y ~ s(x),
+    #formula = y ~ splines::ns(x, 2),
+    se=F,
+    size=0.5,
+    colour="black") 
 
-# -------------------------------------------
 
-#ALL_data_sel[which(ALL_data_sel$ResearchContext %in% c("Macroevolution","Ecomorphology",
-#                                                       "Ecophysiology, trade-offs")),"YourName"]
+# mpd
+
+ggplot(test1, aes (x=mpd,
+                   y=Ntraits,
+                   group = randomization)) +
+  
+  facet_wrap(~KeepOutliers)+
+  geom_point(data=test1 [which(test1$randomization==1),], 
+             mapping = aes (x=mpd,
+                            y=Ntraits),size=2,alpha = 0.2) + 
+  poison_smooth(
+    formula = y ~ s(x),
+    #formula = y ~ splines::ns(x, 2),
+    se=F,
+    size=0.5,
+    colour="black") 
+
+
+
+
+## 20% of the dataset
+
+
+data_to_randomize <- ct_taxa_traits
+test1 <- lapply (seq (1,100), function (i){
+  
+  test_data <- sample (nrow (ct_taxa_traits),nrow (ct_taxa_traits)*0.2) # from this proportion of the dataset
+  data_to_randomize [test_data, "Ntraits"]<-data_to_randomize[test_data, "Ntraits"]-1 # subtract one trait category
+  data_to_randomize$randomization <- i
+  data_to_randomize<-data_to_randomize[which(data_to_randomize$Ntraits>0),]
+  data_to_randomize
+})
+test1<-(do.call (rbind,test1))
+
+
+# plot
+ggplot(test1, aes (x=Ntaxa,
+                            y=Ntraits,
+                            group = randomization)) +
+  
+  facet_wrap(~KeepOutliers)+
+  geom_point(data=test1 [which(test1$randomization==1),], 
+             mapping = aes (x=Ntaxa,
+                            y=Ntraits),size=2,alpha = 0.2) + 
+  poison_smooth(
+    formula = y ~ s(x),
+    #formula = y ~ splines::ns(x, 2),
+    se=F,
+    size=0.5,
+    colour="black") 
+
+
+# mpd
+
+ggplot(test1, aes (x=mpd,
+                   y=Ntraits,
+                   group = randomization)) +
+  
+  facet_wrap(~KeepOutliers)+
+  geom_point(data=test1 [which(test1$randomization==1),], 
+             mapping = aes (x=mpd,
+                            y=Ntraits),size=2,alpha = 0.2) + 
+  poison_smooth(
+    formula = y ~ s(x),
+    #formula = y ~ splines::ns(x, 2),
+    se=F,
+    size=0.5,
+    colour="black") 
+
