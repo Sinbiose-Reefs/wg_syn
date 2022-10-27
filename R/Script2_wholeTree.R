@@ -1,6 +1,17 @@
-# whole tree of life
-require (openxlsx)
-require (here)
+
+# ---------------------------------------
+
+
+#         whole tree of life
+
+
+# -----------------------------------------
+
+
+# load packages and functions
+source("R/packages.R")
+source("R/functions.R")
+
 
 # classification of Ruggiero et al. 2014
 whole_tree <- read.xlsx (here ("data", "Ruggiero_classification.xlsx"))
@@ -70,10 +81,10 @@ class_taxa_all<- class_taxa_all [which(lapply (class_taxa_all,length)>1)]
 class_taxa_class <- lapply (class_taxa_all, function (i) {
   
   
-  tryCatch(
+  #tryCatch(
     
-    # if don't find the class
-    if(length(grep("*class*",i$rank))>0) {
+    # if don't find the class, superclass, or subclass
+    if(length(grep("*class*",i$rank))>0) { # \\bclass\\b
       
       data.frame(i [1:max(grep("*class*",i$rank)),
                     c("name","rank")])
@@ -87,16 +98,17 @@ class_taxa_class <- lapply (class_taxa_all, function (i) {
       data.frame(i [1:max(grep("*king*",i$rank)),
                     c("name","rank")])
       
-    },
+    }#,
     
-    error = function(e) return ("NULL")    
+    #error = function(e) return ("NULL")    
     
-  )
+  #)
 })
 
 # all unique taxa names
 #unique_taxa_names<-unique(unlist(sapply (class_taxa,"[", "name")))
 unique_taxa_names<-unique(unlist(sapply (class_taxa_class,"[", "name")))
+
 
 # empty table to receive the names
 mat_taxa <- matrix(NA,
@@ -105,6 +117,7 @@ mat_taxa <- matrix(NA,
                    dimnames=list(NULL,unique_taxa_names))
 
 # apply to find each taxa
+# find the edges
 taxa_per_name  <- lapply (sapply(class_taxa_class,"[", "name"), function (i) {
   
   mat_taxa [which(colnames(mat_taxa) %in% i)] <- 1
@@ -115,6 +128,8 @@ taxa_per_name  <- lapply (sapply(class_taxa_class,"[", "name"), function (i) {
 
 # melt the list
 taxa_per_name <- do.call(rbind, taxa_per_name)
+
+
 # names at the collapsed scale
 rownames(taxa_per_name) <- unlist(lapply (class_taxa_class, 
                                           function(i)i[nrow(i),"name"]))
@@ -123,10 +138,11 @@ taxa_per_name[is.na(taxa_per_name)]<-0
 
 # aggregate
 taxa_per_name <- aggregate (taxa_per_name, by=list(rownames(taxa_per_name)), FUN=mean)
-names_tips <- taxa_per_name[,1]# names
+names_tips <- taxa_per_name$Group.1# names
 rownames(taxa_per_name) <- names_tips
+
+
 # get a cluster of the taxonomy 
-require(vegan)
 cluster_taxa_whole <-  hclust(
   
   vegdist(taxa_per_name[,-1],# minus names
@@ -135,18 +151,62 @@ cluster_taxa_whole <-  hclust(
   method="average"
   
 )
+
 # into phylo
-require(phytools)
 phylo_taxa_whole<- as.phylo(cluster_taxa_whole)
+
+
+# prune tips that are edges
+# identify tip names
+tips_taxa <- lapply (class_taxa_class, function (i) 
+  
+  i[nrow(i),"name"] # only the last rank
+  
+)
+
+# identify edge names
+edge_names <-lapply (class_taxa_class, function (i) 
+  
+  i[-nrow(i),"name"] # all ranks except the last one
+  
+) 
+
+# except the tips
+edge_names <- unique(unlist(edge_names))
+edge_names <- edge_names [which( edge_names %in% unique(unlist(tips_taxa)) ==F)]
+
+# prune
+phylo_taxa_whole <- drop.tip(phylo_taxa_whole, 
+                             edge_names,
+                 trim.internal = F, 
+                 subtree = F,
+                #root.edge = 0, 
+                rooted = is.rooted(phylo_taxa_whole), 
+                collapse.singles = F,
+                interactive = FALSE)
+
+# remove NAs
+phylo_taxa_whole <- drop.tip(phylo_taxa_whole, 
+         "NA",
+         trim.internal = T, 
+         subtree = F,
+         #root.edge = 0, 
+         rooted = is.rooted(phylo_taxa_whole), 
+         collapse.singles = F,
+         interactive = FALSE)
+
+pdf(file= "test2")
 
 # this is the tree
 plot(phylo_taxa_whole,"fan",
      show.tip.label=T,   
      adj=0.1,srt=25,cex=0.3,no.margin = T)
 
+dev.off()
+
+
 # now find the edges
 # adjacency tree
-source("R/functions.R")
 adTree <- adjacency.tree (phylo_taxa_whole)
 tips <- seq (1,nrow(adTree))
 edges <- seq (max(tips)+1, sum(dim(adTree)))
@@ -159,9 +219,10 @@ colnames(edge_df) <- c("parent","child")
 # colum to receive taxa names
 edge_df$values<-NA
 
+
+
 # load review data
 load(here("output", "ALL_data_sel.RData"))
-require(reshape)
 
 # obtain studied taxa, per paper
 study_taxa <- cast (ALL_data_sel,
@@ -170,43 +231,56 @@ study_taxa <- cast (ALL_data_sel,
 )[,-1]
 
 # remove some taxa to avoid problem (check how to solve after) 
-study_taxa<-study_taxa [,which(colnames(study_taxa) %in% rownames(adTree))]
+# study_taxa <- study_taxa [,which(colnames(study_taxa) %in% rownames(adTree))]
+
+
+# list_missing <- colnames(study_taxa)[which(colnames(study_taxa) %in% phylo_taxa_whole$tip.label ==F)]
+
+# remove studies with 1 taxa above the family level
 study_taxa <- study_taxa [which(rowSums(study_taxa>0) >1),]
 
 # fill edges with papers' data
 study_taxa_edge <- lapply (seq(1,nrow (study_taxa)), function (i) {
   
-  # subset
-  studied_taxa <- colnames(study_taxa[i,][which(study_taxa[i,] >0)])
   
-  # select in the adjacency tree
-  sel_taxa <- adTree[which(rownames(adTree) %in% studied_taxa),]
-  
-  # interesting nodes
-  nodes_int <- which( colSums(sel_taxa) >0) + nrow(adTree)
-  # non shared nodes (particular of each tip)
-  non_shared_nodes <- which( colSums(sel_taxa)> 0 & 
-                               colSums(sel_taxa) < nrow(sel_taxa)) + nrow(adTree)## add tips
-  # nodes shared by tips
-  shared_nodes <- (which( colSums(sel_taxa) == nrow(sel_taxa))) + nrow(adTree)
-  # select nodes of interest
-  nodes_int <- nodes_int [which(nodes_int %in% c(non_shared_nodes,shared_nodes))]
-  
-  # getting the edges connecting to the nodes
-  edge_parent <- rownames(edge_df)[edge_df[,1] %in% nodes_int]
-  edge_child  <- rownames(edge_df)[edge_df[,2] %in% nodes_int]
-  
-  # modify edges (replace by values)
-  mod_edges <- edge_df 
-  mod_edges[edge_parent,"values"] <- NA # NA for parents
-  mod_edges[edge_child,"values"] <- 1
-  # find the tip
-  edge_studied_taxa <- which(rownames(adTree) %in% studied_taxa)
-  mod_edges [which(mod_edges$child %in% edge_studied_taxa),"values"] <- 1
-  
-  ; # return
-  mod_edges
-  
+  tryCatch ({
+          
+          # subset
+          studied_taxa <- colnames(study_taxa[i,][which(study_taxa[i,] >0)])
+          
+          # select in the adjacency tree
+          sel_taxa <- adTree[which(rownames(adTree) %in% studied_taxa),]
+          sel_taxa <- adTree[which(rownames(adTree) %in% studied_taxa),]
+          
+          # interesting nodes
+          nodes_int <- which( colSums(sel_taxa) >0) + nrow(adTree)
+          # non shared nodes (particular of each tip)
+          non_shared_nodes <- which( colSums(sel_taxa)> 0 & 
+                                       colSums(sel_taxa) < nrow(sel_taxa)) + nrow(adTree)## add tips
+          # nodes shared by tips
+          shared_nodes <- (which( colSums(sel_taxa) == nrow(sel_taxa))) + nrow(adTree)
+          # select nodes of interest
+          nodes_int <- nodes_int [which(nodes_int %in% c(non_shared_nodes,shared_nodes))]
+          
+          # getting the edges connecting to the nodes
+          edge_parent <- rownames(edge_df)[edge_df[,1] %in% nodes_int]
+          edge_child  <- rownames(edge_df)[edge_df[,2] %in% nodes_int]
+          
+          # modify edges (replace by values)
+          mod_edges <- edge_df 
+          mod_edges[edge_parent,"values"] <- NA # NA for parents
+          mod_edges[edge_child,"values"] <- 1
+          
+          # find the tip
+          edge_studied_taxa <- which(rownames(adTree) %in% studied_taxa)
+          mod_edges [which(mod_edges$child %in% edge_studied_taxa),"values"] <- 1
+          
+          ; # return
+          mod_edges},
+          
+          error = function(e) return ("NULL") 
+  )
+          
   })
 
 # work?
@@ -218,7 +292,7 @@ edge_color <- ifelse (edge.width == 3,
                        "gray90")
 
 # examples for the first study
-plot(phylo_taxa_whole,type="cladogram",
+plot(phylo_taxa_whole,type="fan",
      show.tip.label=T,
      edge.width = edge.width,
      edge.color = edge_color,
@@ -232,8 +306,8 @@ values_to_phylo<-do.call (cbind,
                                   simplify=F))
 
 ## edges to plot
-values_to_plot<- apply(values_to_phylo,1,max,na.rm=T)+3
-values_to_plot [is.infinite (values_to_plot)]<-2
+values_to_plot<- as.numeric(apply((values_to_phylo),1,max,na.rm=T))+3
+values_to_plot [is.na (values_to_plot)]<-2#[is.infinite (values_to_plot)]<-2
 # distinguish taxa with no study from others with studies
 #values_to_plot_adjusted <- ifelse (values_to_plot == 0, 
 #                          values_to_plot + 1,
@@ -245,7 +319,7 @@ edge_colors <- colfunc(max(values_to_plot)+1)[match (values_to_plot,
                                                           max(values_to_plot)))]
 
 # phylogenyCrossTaxa
-#pdf(here("output","CrossTaxaPhylo.pdf"),width=6,heigh=6)
+pdf(here("output","CrossTaxaPhylo.pdf"),width=6,heigh=6)
 
 plot(phylo_taxa_whole,type="fan",
      show.tip.label=T,
@@ -265,4 +339,7 @@ legend("topleft",
        col = colfunc(max(values_to_plot)+1)[c(NA,seq (1,max(values_to_plot),16))]
 )
 
-#dev.off()
+dev.off()
+
+# end
+rm(list=ls())

@@ -7,3 +7,14 @@ adjacency.tree <- function(tree){
   }
   return(result)	
 }
+
+
+
+# smooth function for ggplot 
+
+
+# poison smooth 
+poison_smooth <- function(...) {
+  geom_smooth(method = "gam", method.args = list(family = "poisson"), ...)
+  # geom_smooth(method = "glm", method.args = list(family = "poisson"), ...) # glm option
+}

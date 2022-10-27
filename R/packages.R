@@ -22,6 +22,8 @@ require("SnowballC")
 library("wordcloud")
 library("RColorBrewer")
 library("openxlsx")
+require (here)
+require(reshape)
 
 require(ggplot2)
 library(viridis)
@@ -33,7 +35,11 @@ require(networkD3)
 
 # transformation/distance
 require(vegan)
+require(phytools)
 
 # webs
 require(igraph)
 require("bipartite")
+
+# analyses
+require (mgcv)
