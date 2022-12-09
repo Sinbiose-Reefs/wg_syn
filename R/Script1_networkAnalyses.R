@@ -446,7 +446,7 @@ edge_colors <- colfunc(max(values_to_plot)+1)[match (values_to_plot,
                                                           max(values_to_plot)))]
 
 # phylogenyCrossTaxa
-pdf(here("output","CrossTaxaPhylo"),width=6,heigh=6)
+# pdf(here("output","CrossTaxaPhylo"),width=6,heigh=6)
 
 plot(phylo_taxa,type="fan",
      show.tip.label=T,
@@ -466,7 +466,7 @@ legend("topleft",
        col = colfunc(max(values_to_plot)+1)[c(NA,seq (1,66,16))]
 )
 
-dev.off()
+#dev.off()
 
 
 # ====================================================================

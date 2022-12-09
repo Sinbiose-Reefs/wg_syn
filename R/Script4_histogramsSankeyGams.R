@@ -5,7 +5,7 @@
 ##  --------------------------------------  ## 
 
 #      Text analyses and figures
-#       fig 3, Sankey and GAMs
+#       figs 4 and 5, Sankey and GAMs
 
 
 ##  --------------------------------------  ## 
@@ -87,6 +87,9 @@ paper_context <- cast ( PaperNumber ~uniqueContext,
 # plot
 ResearchContext <- data.frame(ResearchContext=names(colSums(paper_context>0)), 
                                freq= colSums(paper_context>0))
+
+ResearchContext[order(ResearchContext$freq,decreasing = T),]
+write.csv (ResearchContext, file = here ("output","ResearchContext.csv"))
 
 # world cloud
 
@@ -782,6 +785,11 @@ papers_approach <- cast (formula = PaperNumber ~ HowTheyUseCrossTaxaData,
 # transf
 (colSums (ifelse (papers_approach>0,1,0)))
 
+
+
+
+
+
 # ----------------------------------------
 # relationship between PD, N taxa and N traits
 
@@ -827,7 +835,7 @@ m1 <- gam (Ntraits~s(mpd),
            family="poisson")
 
 # plot
-p1<-ggplot(ct_taxa_traits, aes (x=Ntaxa,
+p1.a<-ggplot(ct_taxa_traits, aes (x=Ntaxa,
                             y=Ntraits,
                             group= KeepOutliers,
                             fill = KeepOutliers)) + 
@@ -839,15 +847,18 @@ p1<-ggplot(ct_taxa_traits, aes (x=Ntaxa,
     size=1,
     colour = "black",
     alpha=0.3) + theme_classic()+  
-  scale_x_continuous(name="Number of taxa per study", limits=c(0, 30)) +
+  scale_x_continuous(name="Number of taxonomic ranks per study", limits=c(0, 30)) +
   scale_y_continuous(name="Number of trait categories per study", limits=c(0, 10))+ 
+  ggtitle ("A")+
   theme(axis.title = element_text(size=16),
-        legend.position = "none") +
+        legend.position = "none",
+        plot.title = element_text(size=35,face="bold")) +
   scale_fill_manual(
     values = c("FALSE" = "orange",
-               "TRUE" = "black"))
+               "TRUE" = "black")) 
 
-p1<-p1 + ggplot2::annotate("text", x = 25, y = 10, label = "n=96",fontface = 'italic')
+p1.a<-p1.a + ggplot2::annotate("text", x = 25, y = 10, 
+                               label = "n=96",fontface = 'italic')
 
 # MPD
 # test of diff models
@@ -855,7 +866,7 @@ m1 <- gam (Ntraits~s(mpd),
            data=ct_taxa_traits[which(ct_taxa_traits$KeepOutliers==F),], 
                        family="poisson")
 
-p2<-ggplot(ct_taxa_traits, aes (x=mpd,
+p2.a<-ggplot(ct_taxa_traits, aes (x=mpd,
                             y=Ntraits,
                             group = KeepOutliers,
                             fill = KeepOutliers)) +
@@ -867,27 +878,31 @@ p2<-ggplot(ct_taxa_traits, aes (x=mpd,
     size=1,
     colour = "black",
     alpha=0.3) + theme_classic()+ 
+  ggtitle("B")+
   scale_x_continuous(name="MPD between taxa within a study", limits=c(0, 1)) +
   scale_y_continuous(name="Number of trait categories per study", limits=c(0, 10))+ 
-  theme(axis.title.y  = element_blank(),
+  theme(plot.title = element_text(size=35,face="bold"),
+          axis.title.y  = element_blank(),
         axis.title.x = element_text(size=16),
         legend.position = c(0.2,0.9))+
   scale_fill_manual(
     values = c("FALSE" = "orange",
                "TRUE" = "black"))
-p2<-p2 + ggplot2::annotate("text", x = 0.75, y = 10, label = "n=94",fontface = 'italic')
-
+p2.a<-p2.a + ggplot2::annotate("text", x = 0.75, y = 10, label = "n=94",fontface = 'italic')
 
 
 png(here ("output", "mpd_Ntaxa_traits"),
-    res = 300,units = "px",width=2500,height=1500)
-grid.arrange(p1,p2,
-             ncol =2)
+    res = 300,units = "cm",width=30,height=15)
+
+grid.arrange(p1.a,p2.a,
+             ncol =2,nrow=1)
+
 dev.off()
 
 
 
-# the number of raw traits
+
+# the raw number of  traits
 
 
 # test 
@@ -908,7 +923,7 @@ p1<-ggplot(ct_taxa_traits, aes (x=Ntaxa,
     size=1,
     colour = "black",
     alpha=0.3) + theme_classic()+  
-  scale_x_continuous(name="Number of taxa per study", limits=c(0, 30)) +
+  scale_x_continuous(name="Number of taxonomic ranks per study", limits=c(0, 30)) +
   scale_y_continuous(name="Number of traits per study", limits=c(0, 20))+ 
   theme(axis.title = element_text(size=16),
         legend.position = "none") +
@@ -946,29 +961,23 @@ p2<-ggplot(ct_taxa_traits, aes (x=mpd,
                "TRUE" = "black"))
 p2<-p2 + ggplot2::annotate("text", x = 0.75, y = 10, label = "n=94",fontface = 'italic')
 
-png(here ("output", "mpd_Ntaxa_RawTraits"),
+png(here ("output", "mpd_Ntaxa_RawTraits",height=4,width=9),
     res = 300,units = "px",width=2500,height=1500)
+
 grid.arrange(p1,p2,
-             ncol =2)
+             ncol =2,nrow=1)
+
 dev.off()
 
 
 
-
-# arrange
-pdf (here ("output", "mpd_Ntaxa_traitspdf"),height=4,width=9)
-grid.arrange(p1,p2,
-             ncol =2)
-dev.off()
 
 
 # randomly remove one trait category in one observation
 
-set.seed(1234)
 
 # 10% of the dataset
 
-# randomly remove one trait category in one observation
 set.seed(1234)
 data_to_randomize <- ct_taxa_traits
 test1 <- lapply (seq (1,100), function (i){
@@ -983,7 +992,7 @@ test1<-(do.call (rbind,test1))
 
 
 # plot
-ggplot(test1, aes (x=Ntaxa,
+p1a<-ggplot(test1, aes (x=Ntaxa,
                    y=Ntraits,
                    group = randomization)) +
   
@@ -996,12 +1005,13 @@ ggplot(test1, aes (x=Ntaxa,
     #formula = y ~ splines::ns(x, 2),
     se=F,
     size=0.5,
-    colour="black") 
+    colour="#DC5F00") +
+  theme_classic()
 
 
 # mpd
 
-ggplot(test1, aes (x=mpd,
+p1b<-ggplot(test1, aes (x=mpd,
                    y=Ntraits,
                    group = randomization)) +
   
@@ -1014,7 +1024,8 @@ ggplot(test1, aes (x=mpd,
     #formula = y ~ splines::ns(x, 2),
     se=F,
     size=0.5,
-    colour="black") 
+    colour="#DC5F00") +
+  theme_classic()
 
 
 
@@ -1035,7 +1046,7 @@ test1<-(do.call (rbind,test1))
 
 
 # plot
-ggplot(test1, aes (x=Ntaxa,
+p1c<-ggplot(test1, aes (x=Ntaxa,
                             y=Ntraits,
                             group = randomization)) +
   
@@ -1048,12 +1059,13 @@ ggplot(test1, aes (x=Ntaxa,
     #formula = y ~ splines::ns(x, 2),
     se=F,
     size=0.5,
-    colour="black") 
+    colour="#DC5F00") +
+  theme_classic()
 
 
 # mpd
 
-ggplot(test1, aes (x=mpd,
+p1d<-ggplot(test1, aes (x=mpd,
                    y=Ntraits,
                    group = randomization)) +
   
@@ -1066,5 +1078,22 @@ ggplot(test1, aes (x=mpd,
     #formula = y ~ splines::ns(x, 2),
     se=F,
     size=0.5,
-    colour="black") 
+    colour="#DC5F00") +
+  theme_classic()
 
+
+# arrange 
+
+png(file=here ("output", "sens_randomiz"),height=12,width=20,units = "cm",res=300)
+grid.arrange(p1a+xlab ("Number of taxonomic ranks") + ylab ("Number of trait categories"),
+             p1b+xlab ("Mean Pairwise Distance between taxa") + ylab (""),
+             p1c+xlab ("Number of taxonomic ranks") + ylab ("Number of trait categories"),
+             p1d+xlab ("Mean Pairwise Distance between taxa") + ylab (""),
+             ncol =2,nrow=2)
+
+dev.off()
+
+
+# end
+
+rm (list=ls())
