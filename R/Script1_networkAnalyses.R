@@ -75,6 +75,17 @@ length(unique(ALL_data_sel$PaperNumber))
 
 # studied systems
 
+obs_studies <- table (ALL_data_sel$PaperNumber,
+       ALL_data_sel$TypeOfStudy)
+# observational
+sum(rowSums(obs_studies [,c("Case study", "observation", "Observation", "observational", "theoretical/observation")]>0))/nrow(obs_studies)
+# experiments
+sum(rowSums(obs_studies [,c("experiment","Experiment","experimental","Mesocosmos")]>0))/nrow(obs_studies)
+# meta
+sum(rowSums(obs_studies [,c("meta-analysis","Meta-analysis","Meta-analytic framework")]>0))/nrow(obs_studies)
+# paleo
+sum((obs_studies [,"Palaeoecology"]>0))/nrow(obs_studies)
+
 
 # -----------------------------------------------------------------------------#
 ## Analysis 1: what's the main taxonomic rank of these cross-taxa research?
