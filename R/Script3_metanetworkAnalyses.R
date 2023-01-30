@@ -300,9 +300,9 @@ m_network_df <- data.frame (value=m_network@likelihood,test="obs")
 # Check the components of each module
 printoutModuleInformation(m_network)
 
-png(here ("output","modules"),width = 12, height = 12, units = "cm",res=300)
+png(here ("output","modules.png"),width = 7, height = 7, units = "cm",res=300)
 plotModuleWeb(m_network,
-              labsize = 0.2)
+              labsize = 0.5)
 dev.off()
 
 

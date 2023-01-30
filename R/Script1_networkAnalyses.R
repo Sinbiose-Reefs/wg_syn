@@ -584,6 +584,37 @@ save (ALL_data_sel,phylo_taxa, file= here ("output", "ALL_data_sel.RData"))
 
 
 
+# list of selected articles
+
+# load all at once
+ALL_data <- lapply (files, function (i) 
+  read.xlsx(here("data","from_readers","ReviewedByALLuza",i),
+            sheet = 1, # data descriptors
+            colNames = TRUE,detectDates=F)[,-c(27:28)])
+
+## set the colnames of my table to other table
+ALL_data <- lapply (seq(2,length(ALL_data)), function (i) {
+  colnames (ALL_data[[i]]) <- colnames(ALL_data[[1]])
+  ;
+  ALL_data[[i]]
+}
+)
+
+## bind all data into a dataframe
+ALL_data<-do.call(rbind,ALL_data)
+# ALL_data[is.na(ALL_data$PaperNumber),] # no NA
+
+# bind my data
+ALL <- read.xlsx(here("data","from_readers","ReviewedByALLuza",files[1]),
+                 sheet = 1, # data descriptors
+                 colNames = TRUE,detectDates=F)[,-c(27:28)]
+ALL_data<- rbind (ALL, # data collected by me, with colnames without special characters
+                  ALL_data)
+
+## All screened papers
+screened <- ALL_data[which(ALL_data$PaperNumber %in% ALL_data_sel$PaperNumber),]
+write.xlsx(screened, file = here ("output","complete_list_screened.xlsx"))
+
 # end
 rm(list=ls())
 
