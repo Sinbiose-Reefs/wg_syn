@@ -310,8 +310,7 @@ plot2 <- ggplot (data=paper_index, aes (fill=freq,
   scale_fill_gradient2(low="gray80", mid= "#BB8760", high="orange",midpoint = 11,
                        limits = c(1,50))+
   theme (axis.text.x = element_text(angle = 90 ,
-                                    vjust = 0, 
-                                    hjust=0),
+                                    vjust = 0.5, hjust=1),
          panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
          panel.background = element_blank(), axis.line = element_line(colour = "black"),
          legend.position = "none"
@@ -322,7 +321,7 @@ plot2 <- ggplot (data=paper_index, aes (fill=freq,
 
 
 
-pdf(here("output","fig_analytical_procedures"),width=4,heigh=5)
+pdf(here("output","fig_analytical_procedures.pdf"),width=4,heigh=5)
 
 plot2
 
@@ -377,7 +376,7 @@ phylo_use <- data.frame (value=(rowSums(phylo_use>0)),use=c("No","Yes"))
 plot5 <- ggplot (data= phylo_use, 
                  aes (fill=use,
                       y=value,
-                      x=use))+
+                      x=1))+
   geom_bar(position="stack",stat="identity")+
   scale_fill_manual(values=c("gray70","#E69F00"))+
   theme (axis.text.x = element_text(angle =0, 
@@ -390,6 +389,7 @@ plot5 <- ggplot (data= phylo_use,
   xlab("Use of phylogeny") +
   ylab ("Frequency") +
   labs(fill="N. studies")
+plot5
 
 # functionally analogous
 func_anal <- table(ALL_data_sel$FunctionallyAnalogousTraits,
@@ -400,7 +400,7 @@ func_anal <- data.frame (value=(rowSums(func_anal>0)),use=c("No","Yes"))
 plot6 <- ggplot (data= func_anal, 
                  aes (fill=use,
                       y=value,
-                      x=use))+
+                      x=1))+
   geom_bar(position="stack",stat="identity")+
   scale_fill_manual(values=c("gray70","#E69F00"))+
   theme (axis.text.x = element_text(angle = 0, 
@@ -425,7 +425,7 @@ ab_use_tab <- data.frame (value=(rowSums(ab_use>0)),use=c("No","Yes"))
 plot7 <- ggplot (data= ab_use_tab, 
                  aes (fill=use,
                       y=value,
-                      x=use))+
+                      x=1))+
   geom_bar(position="stack",stat="identity")+
   scale_fill_manual(values=c("gray70","#E69F00"))+
   theme (axis.text.x = element_text(angle = 0, 
@@ -462,7 +462,7 @@ table(rowSums(ab_use_FD)==2)
 # abundance and indices weighted by abundance
 table((ifelse (ab_use["yes",]>0,1,0) + ab_use_FD[,1]) ==2)
 
-pdf(here ("output","approach"))
+pdf(here ("output","approach.pdf"))
 grid.arrange (plot6,
               plot5+theme(axis.title.y = element_blank()),
               plot7+theme(axis.title.y = element_blank()),
@@ -760,7 +760,8 @@ df_approach_trait$IDsource <- match(df_approach_trait$approach,
                                     nodes$name)-1 
 df_approach_trait$IDtarget <- match(df_approach_trait$trait, 
                                       nodes$name)-1
-
+df_approach_trait$approach <- factor (df_approach_trait$approach,
+                                      levels = c("compare", "both", "combine"))
 
 plot8 <- sankeyNetwork(Links = df_approach_trait, 
                    Nodes = nodes,
@@ -846,16 +847,17 @@ p1.a<-ggplot(ct_taxa_traits, aes (x=Ntaxa,
     se=T,
     size=1,
     colour = "black",
-    alpha=0.3) + theme_classic()+  
+    alpha=0.5) + theme_classic()+  
   scale_x_continuous(name="Number of taxonomic ranks per study", limits=c(0, 30)) +
   scale_y_continuous(name="Number of trait categories per study", limits=c(0, 10))+ 
   ggtitle ("A")+
   theme(axis.title = element_text(size=16),
+        axis.text = element_text(size=12),
         legend.position = "none",
         plot.title = element_text(size=35,face="bold")) +
   scale_fill_manual(
     values = c("FALSE" = "orange",
-               "TRUE" = "black")) 
+               "TRUE" = "gray")) 
 
 p1.a<-p1.a + ggplot2::annotate("text", x = 25, y = 10, 
                                label = "n=96",fontface = 'italic')
@@ -877,21 +879,22 @@ p2.a<-ggplot(ct_taxa_traits, aes (x=mpd,
     se=T,
     size=1,
     colour = "black",
-    alpha=0.3) + theme_classic()+ 
+    alpha=0.5) + theme_classic()+ 
   ggtitle("B")+
   scale_x_continuous(name="MPD between taxa within a study", limits=c(0, 1)) +
   scale_y_continuous(name="Number of trait categories per study", limits=c(0, 10))+ 
   theme(plot.title = element_text(size=35,face="bold"),
           axis.title.y  = element_blank(),
         axis.title.x = element_text(size=16),
+        axis.text = element_text(size=12),
         legend.position = c(0.2,0.9))+
   scale_fill_manual(
     values = c("FALSE" = "orange",
-               "TRUE" = "black"))
+               "TRUE" = "gray"))
 p2.a<-p2.a + ggplot2::annotate("text", x = 0.75, y = 10, label = "n=94",fontface = 'italic')
 
 
-png(here ("output", "mpd_Ntaxa_traits"),
+png(here ("output", "mpd_Ntaxa_traits.png"),
     res = 300,units = "cm",width=30,height=15)
 
 grid.arrange(p1.a,p2.a,

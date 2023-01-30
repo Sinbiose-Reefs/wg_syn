@@ -166,8 +166,7 @@ plot1 <- ggplot (data=tax.level.df,
   scale_fill_gradient2(low="gray80", mid= "#BB8760", high="orange",midpoint = 11,
                        limits = c(1,50))+
   theme (axis.text.x = element_text(angle = 90 ,
-                                    vjust = 0, 
-                                    hjust=0),
+                                    vjust = 0.5, hjust=1),
          panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
          panel.background = element_blank(), axis.line = element_line(colour = "black"),
          legend.position = "top"
@@ -176,6 +175,7 @@ plot1 <- ggplot (data=tax.level.df,
   xlab ("Frequency") +
   labs(fill="") + 
   coord_flip()
+plot1
 
 # plot of N studies per number of ranks
 ranksPerStudyDF <- table(ranksPerStudy)
@@ -198,7 +198,6 @@ plot2 <- ggplot (data=ranksPerStudyDF, aes (fill=Freq,
   xlab("# Taxonomic Ranks") +
   ylab ("Frequency") +
   labs(fill=" ")
-
 
 # obtain studied taxa, per paper
 study_taxa <- cast (ALL_data_sel,
@@ -229,8 +228,7 @@ plot3 <- ggplot (data=data.frame(mostOftenStudiedTaxa), aes (fill=Freq,
   scale_fill_gradient2(low="gray80", mid= "#BB8760", high="orange",midpoint = 11,
                        limits = c(1,50))+
   theme (axis.text.x = element_text(angle = 90, 
-                                    vjust = 0, 
-                                    hjust=0),
+                                    vjust = 0.5, hjust=1),
          panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
          panel.background = element_blank(), axis.line = element_line(colour = "black"),
          legend.position = "top"
@@ -239,8 +237,7 @@ plot3 <- ggplot (data=data.frame(mostOftenStudiedTaxa), aes (fill=Freq,
   ylab ("Frequency") +
   labs(fill="# Studies")
 
-
-pdf(here("output","fig1"),width=6,heigh=8)
+pdf(here("output","fig1.pdf"),width=6,heigh=8)
 
 grid.arrange(plot1+theme(legend.position = "none"),
              plot2+theme(legend.position = "none"),
