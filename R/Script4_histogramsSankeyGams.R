@@ -478,6 +478,9 @@ ecosystem <- data.frame (value=(rowSums(ecosystem>0)))
 ecosystem$system <- rownames(ecosystem)
 ecosystem$value/sum(ecosystem$value)
 
+
+unique(ALL_data_sel [which(ALL_data_sel$EcologicalSystem %in% unique(ALL_data_sel$EcologicalSystem)[5:6]),"EcologicalSystem"])
+
 # ------------------------------------------
 # which traits
 
