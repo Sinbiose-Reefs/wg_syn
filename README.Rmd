@@ -20,7 +20,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ##### The phylogeny was based on the taxonomic ranks of studied organisms. Taxonomic nomenclature follows the NCBI (National Center for Biotechnology Information), and is above Subclass level. As some studies have identified varying taxonomic levels for the same organism (e.g., Acari, Arachnida), we have opted to display all taxonomic ranks instead of solely showcasing the higher-level rank as the phylogeny's edges. Silhouettes were obtained from Google images. 
 
 ```{r echo=FALSE, out.width = "100%",out.height = "80%", fig.align = "center"}
-knitr::include_graphics("output/figs/fig3.png")
+knitr::include_graphics("phylo.png")
 ```
 
 

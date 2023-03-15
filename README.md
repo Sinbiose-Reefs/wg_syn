@@ -8,9 +8,11 @@ Reef Synthesis Working Group - ReefSYN
 <!-- badges: start -->
 <!-- badges: end -->
 
-#### Tree topology of taxa comprising cross-taxa research in functional ecology
+#### Tree topology of taxa within multiple taxa research in functional ecology (orange branches).
 
-<img src="output/figs/fig3.png" width="100%" height="80%" style="display: block; margin: auto;" />
+##### The phylogeny was based on the taxonomic ranks of studied organisms. Taxonomic nomenclature follows the NCBI (National Center for Biotechnology Information), and is above Subclass level. As some studies have identified varying taxonomic levels for the same organism (e.g., Acari, Arachnida), we have opted to display all taxonomic ranks instead of solely showcasing the higher-level rank as the phylogeny’s edges. Silhouettes were obtained from Google images.
+
+<img src="phylo.png" width="100%" height="80%" style="display: block; margin: auto;" />
 
 #### This paper was produced using the following software and associated packages:
 
