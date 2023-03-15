@@ -1,8 +1,8 @@
 ---
-title: "Going cross-taxa in functional ecology: a conceptual framework"
+title: "Going across taxa in functional ecology: review and perspectives of an emerging field"
 output: github_document
-authors: Reef Synthesis Working Group
-date: '2022-06-23'
+author: "Reef Synthesis Working Group - ReefSYN"
+date: ' (March, 2023)'
 ---
 
 
@@ -16,18 +16,21 @@ date: '2022-06-23'
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Tree topology of taxa comprising cross-taxa research in functional ecology
+#### Tree topology of taxa within multiple taxa research in functional ecology (orange branches). 
+##### The phylogeny was based on the taxonomic ranks of studied organisms. Taxonomic nomenclature follows the NCBI (National Center for Biotechnology Information), and is above Subclass level. As some studies have identified varying taxonomic levels for the same organism (e.g., Acari, Arachnida), we have opted to display all taxonomic ranks instead of solely showcasing the higher-level rank as the phylogeny's edges. Silhouettes were obtained from Google images. 
 
-
-```{r,echo=F,fig.keep=3,warning=FALSE,message=FALSE}
-
-
-
-
-source ( "R/whole_tree_fig3.R")
+```{r echo=FALSE, out.width = "100%",out.height = "80%", fig.align = "center"}
+knitr::include_graphics("output/figs/fig3.png")
+```
 
 
 
+#### This paper was produced using the following software and associated packages:
+
+```{r pressure, echo=F,warning=F,message=F}
+
+source("R/packages.R")
+sessionInfo()
 
 
 ```

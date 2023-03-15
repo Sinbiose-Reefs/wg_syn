@@ -799,6 +799,8 @@ papers_approach <- cast (formula = PaperNumber ~ HowTheyUseCrossTaxaData,
 
 list_papers <- unique(ALL_data_sel$PaperNumber)
 
+ALL_data_sel [grep ("Gwinn, DC; Middleton",ALL_data_sel$StudyAuthors),"StudyAuthors"]
+
 ct_taxa_traits <- lapply (list_papers, function (i) # apply to each study
   data.frame (
   # count the number of taxa
@@ -852,10 +854,10 @@ p1.a<-ggplot(ct_taxa_traits, aes (x=Ntaxa,
     colour = "black",
     alpha=0.5) + theme_classic()+  
   scale_x_continuous(name="Number of taxonomic ranks per study", limits=c(0, 30)) +
-  scale_y_continuous(name="Number of trait categories per study", limits=c(0, 10))+ 
+  scale_y_continuous(name="Number of trait types per study", limits=c(0, 10))+ 
   ggtitle ("A")+
   theme(axis.title = element_text(size=16),
-        axis.text = element_text(size=12),
+        axis.text = element_text(size=14),
         legend.position = "none",
         plot.title = element_text(size=35,face="bold")) +
   scale_fill_manual(
@@ -885,11 +887,11 @@ p2.a<-ggplot(ct_taxa_traits, aes (x=mpd,
     alpha=0.5) + theme_classic()+ 
   ggtitle("B")+
   scale_x_continuous(name="MPD between taxa within a study", limits=c(0, 1)) +
-  scale_y_continuous(name="Number of trait categories per study", limits=c(0, 10))+ 
+  scale_y_continuous(name="Number of trait types per study", limits=c(0, 10))+ 
   theme(plot.title = element_text(size=35,face="bold"),
           axis.title.y  = element_blank(),
         axis.title.x = element_text(size=16),
-        axis.text = element_text(size=12),
+        axis.text = element_text(size=14),
         legend.position = c(0.2,0.9))+
   scale_fill_manual(
     values = c("FALSE" = "orange",
@@ -897,7 +899,7 @@ p2.a<-ggplot(ct_taxa_traits, aes (x=mpd,
 p2.a<-p2.a + ggplot2::annotate("text", x = 0.75, y = 10, label = "n=94",fontface = 'italic')
 
 
-png(here ("output", "mpd_Ntaxa_traits.png"),
+png(here ("output","figs", "fig5.png"),
     res = 300,units = "cm",width=30,height=15)
 
 grid.arrange(p1.a,p2.a,
@@ -930,7 +932,7 @@ p1<-ggplot(ct_taxa_traits, aes (x=Ntaxa,
     colour = "black",
     alpha=0.3) + theme_classic()+  
   scale_x_continuous(name="Number of taxonomic ranks per study", limits=c(0, 30)) +
-  scale_y_continuous(name="Number of traits per study", limits=c(0, 20))+ 
+  scale_y_continuous(name="Number of trait types per study", limits=c(0, 20))+ 
   theme(axis.title = element_text(size=16),
         legend.position = "none") +
   scale_fill_manual(
@@ -958,7 +960,7 @@ p2<-ggplot(ct_taxa_traits, aes (x=mpd,
     colour = "black",
     alpha=0.3) + theme_classic()+ 
   scale_x_continuous(name="MPD between taxa within a study", limits=c(0, 1)) +
-  scale_y_continuous(name="Number of traits per study", limits=c(0, 20))+ 
+  scale_y_continuous(name="Number of trait types per study", limits=c(0, 20))+ 
   theme(axis.title.y  = element_blank(),
         axis.title.x = element_text(size=16),
         legend.position = c(0.2,0.9))+
@@ -967,7 +969,7 @@ p2<-ggplot(ct_taxa_traits, aes (x=mpd,
                "TRUE" = "black"))
 p2<-p2 + ggplot2::annotate("text", x = 0.75, y = 10, label = "n=94",fontface = 'italic')
 
-png(here ("output", "mpd_Ntaxa_RawTraits",height=4,width=9),
+png(here ("output", "mpd_Ntaxa_RawTraits.png"),#height=4,width=9,
     res = 300,units = "px",width=2500,height=1500)
 
 grid.arrange(p1,p2,
@@ -1090,10 +1092,10 @@ p1d<-ggplot(test1, aes (x=mpd,
 
 # arrange 
 
-png(file=here ("output", "sens_randomiz"),height=12,width=20,units = "cm",res=300)
-grid.arrange(p1a+xlab ("Number of taxonomic ranks") + ylab ("Number of trait categories"),
+png(file=here ("output", "sens_randomiz.png"),height=12,width=20,units = "cm",res=300)
+grid.arrange(p1a+xlab ("Number of taxonomic ranks") + ylab ("Number of trait types"),
              p1b+xlab ("Mean Pairwise Distance between taxa") + ylab (""),
-             p1c+xlab ("Number of taxonomic ranks") + ylab ("Number of trait categories"),
+             p1c+xlab ("Number of taxonomic ranks") + ylab ("Number of trait types"),
              p1d+xlab ("Mean Pairwise Distance between taxa") + ylab (""),
              ncol =2,nrow=2)
 
