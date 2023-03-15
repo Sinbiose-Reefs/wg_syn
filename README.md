@@ -10,7 +10,7 @@ Reef Synthesis Working Group - ReefSYN
 
 #### Tree topology of taxa within multiple taxa research in functional ecology (orange branches).
 
-##### The phylogeny was based on the taxonomic ranks of studied organisms. Taxonomic nomenclature follows the NCBI (National Center for Biotechnology Information), and is above Subclass level. As some studies have identified varying taxonomic levels for the same organism (e.g., Acari, Arachnida), we have opted to display all taxonomic ranks instead of solely showcasing the higher-level rank as the phylogeny’s edges. Silhouettes were obtained from Google images.
+##### We assessed the coverage of the reviewed research across the Tree of Life using the classification of Ruggiero et al. (2015) to all organisms on Earth. The phylogeny was based on the taxonomic ranks of studied organisms. Taxonomic nomenclature follows the NCBI (National Center for Biotechnology Information), and is above Subclass level. As some studies have identified varying taxonomic levels for the same organism (e.g., Acari, Arachnida), we have opted to display all taxonomic ranks instead of solely showcasing the higher-level rank as the phylogeny’s edges. Silhouettes were obtained from Google images.
 
 <img src="phylo.png" width="100%" height="80%" style="display: block; margin: auto;" />
 
