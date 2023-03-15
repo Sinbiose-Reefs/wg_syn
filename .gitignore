@@ -8,5 +8,4 @@ data/*.xlsx
 .RData
 .Ruserdata
 *.jpg
-*.png
 *.txt
