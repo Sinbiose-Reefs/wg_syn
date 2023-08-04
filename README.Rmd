@@ -2,7 +2,7 @@
 title: "Going across taxa in functional ecology: review and perspectives of an emerging field"
 output: github_document
 author: "Reef Synthesis Working Group - ReefSYN"
-date: ' (March, 2023)'
+date: ' (July, 2023)'
 ---
 
 
@@ -16,14 +16,40 @@ date: ' (March, 2023)'
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+Brief description of the folders in this repository:
+
+-- data: contains the raw data. It includes the life classification by Ruggiero et al. (2014), the preliminary filtering of articles (file "Pooled_answers_Filtering_articles_with_questions.xlsx"), and raw data from readers (folder "from_readers").
+
+-- processed_data: data processed across the Rscripts
+
+-- output: figures and tables.
+
+-- R: scripts of R used in data analyses:
+
+---- adjustment.R: taxonomic adjustment. This script is called in Script1_networkAnalysis, and the processed data is saved at the folder "processed_data";
+
+---- functions.R: useful functions
+
+---- packages.R: required packages
+
+---- Script1_networkAnalysis.R: R script used to edit the data and create the bipartite network shown in Fig. 2. The script will produce figures and the processed data "ALL_data_sel.RData". Also the script uses taxa names cited in the reviewed research to obtain their taxonomic ranks using functions of 'taxize' package (processed data: "ranks.RData"). 
+
+---- Script2_networkAnalysis.R: R script used to edit the data and create the taxonomic tree shown in Fig. 3. The script calls the processed data "ALL_data_sel.RData" and the classification of Ruggiero et al. (2014) hosted in the folder 'data'. The figure 3 was edited in Inkscape v1. This script did not update the processed data "ALL_data_sel.RData". The script uses taxa names cited in Ruggiero et al. (2014) to obtain their taxonomic ranks using functions of 'taxize' package (processed data: "whole_class_taxa.RData"). 
+
+---- Script3_networkAnalysis.R: R script used to edit the data and create the metanetwork. The script calls the processed data "ALL_data_sel.RData" to produce the metanetwork and estimate network structure statistics (e.g., degree statistics). 
+
+---- Script4_histogarmSankey.R: R script used to edit the data and create the Figs 1 and 4. The script calls the processed data "ALL_data_sel.RData" to produce the histograms and Sankey plot. Several changes on variables needed to analyses were made in the dataset "ALL_data_sel.RData". At the end of the script we updated the data to processed data "ALL_data_sel_processed_data.RData".
+
+---- Script5_GAM: Script used to run Generalized Additive Models and sensitivity analysis (Fig. 5). It uses the processed data "ALL_data_sel_processed_data.RData".
+
+Below we present a small summary of our research.
+
 #### Tree topology of taxa within multiple taxa research in functional ecology (orange branches). 
 ##### We assessed the coverage of the reviewed research across the Tree of Life using the classification of Ruggiero et al. (2015) to all organisms on Earth. The phylogeny was based on the taxonomic ranks of studied organisms. Taxonomic nomenclature follows the NCBI (National Center for Biotechnology Information), and is above Subclass level. As some studies have identified varying taxonomic levels for the same organism (e.g., Acari, Arachnida), we have opted to display all taxonomic ranks instead of solely showcasing the higher-level rank as the phylogeny's edges. Silhouettes were obtained from Google images. 
 
 ```{r echo=FALSE, out.width = "100%",out.height = "80%", fig.align = "center"}
 knitr::include_graphics("phylo.png")
 ```
-
-
 
 #### This paper was produced using the following software and associated packages:
 
