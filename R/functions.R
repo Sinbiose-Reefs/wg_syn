@@ -11,8 +11,6 @@ adjacency.tree <- function(tree){
 
 
 # smooth function for ggplot 
-
-
 # poison smooth 
 poison_smooth <- function(...) {
   geom_smooth(method = "gam", method.args = list(family = "poisson"), ...)

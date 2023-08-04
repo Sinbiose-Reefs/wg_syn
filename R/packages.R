@@ -1,11 +1,11 @@
-# transitar entre pastas
+# move across folders
 require(here)
 
-## pacotes para carregar os dados
+## load xlsx
 require(xlsx)
 require(openxlsx)
 
-# tabelas
+# tables
 require(reshape)
 require(tidyverse)
 
@@ -16,15 +16,14 @@ require(ape)
 require(taxize)
 
 # world cloud
-
 require("tm")
 require("SnowballC")
 library("wordcloud")
 library("RColorBrewer")
 library("openxlsx")
-require (here)
 require(reshape)
 
+# plot
 require(ggplot2)
 library(viridis)
 require(gridExtra)
