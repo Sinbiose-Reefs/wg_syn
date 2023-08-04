@@ -4,7 +4,8 @@
 ##  --------------------------------------  ## 
 
 #      Network analyses and figures
-# fig 1, interaction networks and histograms
+
+#     fig 1, interaction networks and histograms
 
 
 ##  --------------------------------------  ## 
@@ -90,7 +91,11 @@ sum((obs_studies [,"Palaeoecology"]>0))/nrow(obs_studies)
 # -----------------------------------------------------------------------------#
 ## Analysis 1: what's the main taxonomic rank of these cross-taxa research?
 
+
+# run some adjustments using a R function to do so
 source("R/adjustment.R")
+
+
 ALL_data_sel <- adjust_rank (ALL_data_sel)# adjust ranks
 # ranks
 unique(ALL_data_sel$TaxonomicRank)[order(unique(ALL_data_sel$TaxonomicRank))]
@@ -258,15 +263,20 @@ dev.off()
 # ------------------------
 # links in the phylogeny: what are the main connections across studies
 
+# create a folder to organize processed data
+
+dir.create("processed_data")
+
 # taxonomic ranking (run once (slow) and save)
 #class_taxa <- classification(unique(ALL_data_sel$WhichOrganism),
 #                      db = 'ncbi')
 # save
 #save(class_taxa,
-#     file=here("output","ranks.RData"))
+#     file=here("processed_data","ranks.RData"))
 # load
 
-load(file=here("output","ranks.RData"))
+
+load(file=here("processed_data","ranks.RData"))
 
 
 # rm unclassified taxa
@@ -580,7 +590,7 @@ dev.off()
 
 # save the dataset
 
-save (ALL_data_sel,phylo_taxa, file= here ("output", "ALL_data_sel.RData"))
+save (ALL_data_sel,phylo_taxa, file= here ("processed_data", "ALL_data_sel.RData"))
 
 
 
@@ -613,7 +623,7 @@ ALL_data<- rbind (ALL, # data collected by me, with colnames without special cha
 
 ## All screened papers
 screened <- ALL_data[which(ALL_data$PaperNumber %in% ALL_data_sel$PaperNumber),]
-write.xlsx(screened, file = here ("output","complete_list_screened.xlsx"))
+write.xlsx(screened, file = here ("processed_data","complete_list_screened.xlsx"))
 
 # end
 rm(list=ls())
