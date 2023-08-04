@@ -4,7 +4,7 @@
 ##  --------------------------------------  ## 
 
 #     Meta Network analyses and figures
-# fig 2, interaction networks 
+#     fig 2, interaction networks 
 
 
 ##  --------------------------------------  ## 
@@ -16,7 +16,7 @@ source("R/packages.R")
 source("R/functions.R")
 # save the dataset
 
-load (here ("output", "ALL_data_sel.RData"))
+load (here ("processed_data", "ALL_data_sel.RData"))
 
 
 
@@ -73,9 +73,9 @@ comb_edges <-comb_edges[which (comb_edges$weight >0),]
 
 # need a complete ranking of taxa
 
-load (file = here ("output", "ranks.RData"))
+load (file = here ("processed_data", "ranks.RData"))
 class_taxa_data <- class_taxa
-load (file = here ("output", "whole_class_taxa.RData"))
+load (file = here ("processed_data", "whole_class_taxa.RData"))
 class_taxa_whole <- class_taxa
 
 
@@ -338,14 +338,11 @@ p
 
 
 
-# end
-rm(list=ls())
-
-
-
+# -------------------------------------------------------------------
 
 
 # sensitivity analysis using different taxonomic resolutions
+# this analysis was reported in the letter to reviewers (second round)
 
 sens_test <- class_taxa_df[which(class_taxa_df$rank %in% c("no rank",
                                                            "order",
@@ -474,3 +471,4 @@ p<-p + scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9"))+
 
 p
 
+rm(list=ls())
