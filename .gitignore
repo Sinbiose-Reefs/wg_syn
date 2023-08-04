@@ -1,5 +1,6 @@
 manuscript
 output
+R/analysis.R
 data/citation_report
 data/data_collection
 data/*.xlsx
