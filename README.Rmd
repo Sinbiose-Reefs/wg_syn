@@ -2,7 +2,7 @@
 title: "Going across taxa in functional ecology: review and perspectives of an emerging field"
 output: github_document
 author: "Reef Synthesis Working Group - ReefSYN"
-date: ' (July, 2023)'
+date: ' (August, 2023)'
 ---
 
 
