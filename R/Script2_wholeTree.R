@@ -63,11 +63,11 @@ class_taxon<- unique(class_taxon)
 # 
 # # save this
 #save (class_taxa,
-#      file = here ("output", "whole_class_taxa.RData"))
+#      file = here ("processed_data", "whole_class_taxa.RData"))
 
-load (file = here ("output", "ranks.RData"))
+load (file = here ("processed_data", "ranks.RData"))
 class_taxa_data <- class_taxa
-load (file = here ("output", "whole_class_taxa.RData"))
+load (file = here ("processed_data", "whole_class_taxa.RData"))
 class_taxa_whole <- class_taxa
 
 # bind data
@@ -219,10 +219,8 @@ colnames(edge_df) <- c("parent","child")
 # colum to receive taxa names
 edge_df$values<-NA
 
-
-
 # load review data
-load(here("output", "ALL_data_sel.RData"))
+load(here("processed_data", "ALL_data_sel.RData"))
 
 # obtain studied taxa, per paper
 study_taxa <- cast (ALL_data_sel,
@@ -230,11 +228,6 @@ study_taxa <- cast (ALL_data_sel,
                     value = "Realm"
 )[,-1]
 
-# remove some taxa to avoid problem (check how to solve after) 
-# study_taxa <- study_taxa [,which(colnames(study_taxa) %in% rownames(adTree))]
-
-
-# list_missing <- colnames(study_taxa)[which(colnames(study_taxa) %in% phylo_taxa_whole$tip.label ==F)]
 
 # remove studies with 1 taxa above the family level
 study_taxa <- study_taxa [which(rowSums(study_taxa>0) >1),]
