@@ -2,7 +2,7 @@ Going across taxa in functional ecology: review and perspectives of an
 emerging field
 ================
 Reef Synthesis Working Group - ReefSYN
-(August, 2023)
+(September, 2023)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 <!-- badges: start -->
@@ -10,33 +10,37 @@ Reef Synthesis Working Group - ReefSYN
 
 Brief description of the folders in this repository:
 
-– data: contains the raw data. It includes the life classification by
-Ruggiero et al. (2014), the preliminary filtering of articles (file
-“Pooled_answers_Filtering_articles_with_questions.xlsx”), and raw data
-from readers (folder “from_readers”).
+### Root
 
-– processed_data: data processed across the Rscripts
+##### \|
 
-– output: figures and tables.
+##### \|– data: contains the raw data. It includes the life classification by Ruggiero et al. (2014), the preliminary filtering of articles (file “Pooled_answers_Filtering_articles_with_questions.xlsx”), and raw data from readers (folder “from_readers”).
 
-– R: scripts of R used in data analyses:
+##### \|
 
-—- adjustment.R: taxonomic adjustment. This script is called in
-Script1_networkAnalysis, and the processed data is saved at the folder
-“processed_data”;
+##### \|– processed_data: data processed after running the Rscripts
 
-—- functions.R: useful functions
+##### \|
 
-—- packages.R: required packages
+##### \|– output: figures and tables.
 
-—- Script1_networkAnalysis.R: R script used to edit the data and create
-the bipartite network shown in Fig. 2. The script will produce figures
-and the processed data “ALL_data_sel.RData”. Also the script uses taxa
-names cited in the reviewed research to obtain their taxonomic ranks
-using functions of ‘taxize’ package (processed data: “ranks.RData”).
+##### \|
 
-—- Script2_networkAnalysis.R: R script used to edit the data and create
-the taxonomic tree shown in Fig. 3. The script calls the processed data
+##### \|– R: scripts of R used in data analyses. Each script comprises one step of analysis. —- \| – adjustment.R: taxonomic adjustment. This script is called in the “Script1_networkAnalysis.R”
+
+\| — functions.R: useful functions
+
+\| — packages.R: required packages
+
+\| — Script1_networkAnalysis.R: R script used to edit the data and
+create the bipartite network shown in Fig. 2. The script will produce
+figures and the processed data “ALL_data_sel.RData”. Also the script
+uses taxa names cited in the reviewed research to obtain their taxonomic
+ranks using functions of ‘taxize’ package (processed data:
+“ranks.RData”).
+
+\| — Script2_wholeTree.R: R script used to edit the data and create the
+taxonomic tree shown in Fig. 3. The script calls the processed data
 “ALL_data_sel.RData” and the classification of Ruggiero et al. (2014)
 hosted in the folder ‘data’. The figure 3 was edited in Inkscape v1.
 This script did not update the processed data “ALL_data_sel.RData”. The
@@ -44,23 +48,21 @@ script uses taxa names cited in Ruggiero et al. (2014) to obtain their
 taxonomic ranks using functions of ‘taxize’ package (processed data:
 “whole_class_taxa.RData”).
 
-—- Script3_networkAnalysis.R: R script used to edit the data and create
-the metanetwork. The script calls the processed data
+\| — Script3_metanetworkAnalyses.R: R script used to edit the data and
+create the metanetwork. The script calls the processed data
 “ALL_data_sel.RData” to produce the metanetwork and estimate network
 structure statistics (e.g., degree statistics).
 
-—- Script4_histogarmSankey.R: R script used to edit the data and create
-the Figs 1 and 4. The script calls the processed data
+\| — Script4_histogarmSankey.R: R script used to edit the data and
+create the Figs 1 and 4. The script calls the processed data
 “ALL_data_sel.RData” to produce the histograms and Sankey plot. Several
 changes on variables needed to analyses were made in the dataset
 “ALL_data_sel.RData”. At the end of the script we updated the data to
 processed data “ALL_data_sel_processed_data.RData”.
 
-—- Script5_GAM: Script used to run Generalized Additive Models and
+\| — Script5_GAM: Script used to run Generalized Additive Models and
 sensitivity analysis (Fig. 5). It uses the processed data
 “ALL_data_sel_processed_data.RData”.
-
-Below we present a small summary of our research.
 
 #### Tree topology of taxa within multiple taxa research in functional ecology (orange branches).
 
@@ -117,7 +119,7 @@ Below we present a small summary of our research.
     ## [28] numDeriv_2016.8-1.1     Rcpp_1.0.10             assertthat_0.2.1       
     ## [31] iterators_1.0.14        knitr_1.42              fields_14.1            
     ## [34] optimParallel_1.0-2     zoo_1.8-12              rentrez_1.2.3          
-    ## [37] Matrix_1.5-4            splines_4.3.0           timechange_0.2.0       
+    ## [37] Matrix_1.6-1            splines_4.3.0           timechange_0.2.0       
     ## [40] tidyselect_1.2.0        rstudioapi_0.14         yaml_2.3.7             
     ## [43] doParallel_1.0.17       codetools_0.2-19        curl_5.0.0             
     ## [46] plyr_1.8.8              withr_2.5.0             coda_0.19-4            
