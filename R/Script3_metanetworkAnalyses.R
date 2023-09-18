@@ -469,6 +469,15 @@ p<-p + scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9"))+
                   y=20,
                   label=paste ("Q=",round(m_network_df$value,2))))
 
+
+png(here ("output","figs", "modularity_FigS1_3.png"),
+    width=20,height=10,units="cm",res=300)
+
+
 p
+
+
+dev.off()
+
 
 rm(list=ls())

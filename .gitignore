@@ -1,5 +1,9 @@
 manuscript
-output
+output/*.html
+output/*.pdf
+output/*.html
+
+
 R/analysis.R
 data/citation_report
 data/data_collection

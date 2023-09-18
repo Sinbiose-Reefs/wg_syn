@@ -143,7 +143,7 @@ p2.a<-p2.a +
   ggplot2::annotate("text", x = 0.75, y = 8.5, label = "n=94",fontface = 'italic')
 
 
-pdf(here ("output", "fig5.pdf"),
+pdf(here ("output","figs", "fig5.pdf"),
     width=12,height=6)
 
 grid.arrange(p1.a,p2.a,
@@ -230,8 +230,8 @@ p2<-p2 +
   ggplot2::annotate("text", x = 0.75, y = 17, label = "n=94",fontface = 'italic')
 
 
-
-pdf(here ("output", "figS1.5.pdf"),
+# save
+pdf(here ("output", "figs","figS1.5.pdf"),
     width=12,height=6)
 
 grid.arrange(p1,p2,
@@ -348,14 +348,13 @@ p1b<-ggplot(test1, aes (x=mpd,
 
 
 
-png(here ("output", "figS1.6.png"),
+png(here ("output","figs", "figS1.6.png"),
     width=20,height=10,units="cm",res=300)
 
 grid.arrange(p1a,p1b,
              ncol =2,nrow=1)
 
 dev.off()
-
 
 
 
@@ -461,7 +460,7 @@ p1d<-ggplot(test1, aes (x=mpd,
 
 
 # save plot
-png(here ("output", "figS1.7.png"),
+png(here ("output","figs", "figS1.7.png"),
     width=20,height=10,units="cm",res=300)
 
 grid.arrange(p1c,p1d,
