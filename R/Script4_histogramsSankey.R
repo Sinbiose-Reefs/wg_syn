@@ -330,7 +330,6 @@ plot2
 dev.off()
 
 
-
 ## calling ALL_data_sel the new table with indices
 ALL_data_sel <- indices
 
@@ -810,6 +809,7 @@ papers_approach <- cast (formula = PaperNumber ~ HowTheyUseCrossTaxaData,
 
 # save also the processed dataset at the end of analysis
 save (ALL_data_sel, file=here ("processed_data", "ALL_data_sel_processed_data.RData"))
+write.csv (ALL_data_sel, file=here ("processed_data", "ALL_data_sel_processed_data.csv"))
 
 rm(list=ls())
 
